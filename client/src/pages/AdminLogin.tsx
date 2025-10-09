@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function AdminLogin() {
   const [, setLocation] = useLocation();
@@ -18,17 +19,18 @@ export default function AdminLogin() {
     setError("");
     setIsLoading(true);
 
-    // TODO: replace with actual API call
-    await new Promise(resolve => setTimeout(resolve, 500));
+    try {
+      const response = await apiRequest("POST", "/api/admin/login", { username, password });
+      const result = await response.json();
 
-    if (username === "nomun" && password === "969908") {
-      console.log("Login successful");
-      setLocation("/admin/dashboard");
-    } else {
+      if (result.success) {
+        setLocation("/admin/dashboard");
+      }
+    } catch (err) {
       setError("아이디 또는 비밀번호가 올바르지 않습니다");
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   return (
